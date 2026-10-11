@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secret Jersey SPb</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; background: #000; color: #fff; line-height: 1.6; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+header { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; background: radial-gradient(circle at center, #1a1a2e, #000); }
+header h1 { font-size: 4rem; margin-bottom: 20px; }
+header h1 span { color: #ff3366; display: block; font-size: 1.5rem; letter-spacing: 8px; }
+header p { color: #aaa; font-size: 1.2rem; margin-bottom: 30px; }
+
+.btn { display: inline-block; padding: 15px 30px; background: #ff3366; color: #fff; text-decoration: none; border-radius: 50px; font-weight: bold; margin: 10px; transition: 0.3s; border: none; cursor: pointer; }
+.btn:hover { background: #ff4477; transform: translateY(-3px); }
+.btn-outline { background: transparent; border: 2px solid #ff3366; color: #ff3366; }
+.btn-outline:hover { background: #ff3366; color: #fff; }
+
+section { padding: 80px 0; }
+h2 { text-align: center; font-size: 2.5rem; margin-bottom: 40px; text-transform: uppercase; }
+
+.products { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.card { background: #111; border: 1px solid #222; border-radius: 16px; overflow: hidden; transition: 0.3s; cursor: pointer; }
+.card:hover { transform: translateY(-10px); border-color: #ff3366; }
+.card-img { 
+    aspect-ratio: 1; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    position: relative;
+    background: #1a1a1a;
+    overflow: hidden;
+}
+.card-img img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover;
+    object-position: center 15%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+.card-body { padding: 20px; }
+.card-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
+.card-price { color: #ff3366; font-size: 1.5rem; font-weight: bold; }
+.card-sizes { color: #888; font-size: 0.9rem; margin-top: 10px; }
+
+.mystery { background: linear-gradient(135deg, #1a1a2e, #000); border: 2px solid #ff3366; border-radius: 24px; padding: 60px 40px; text-align: center; }
+.mystery h3 { font-size: 2.5rem; margin-bottom: 20px; }
+.mystery .price { font-size: 3rem; color: #ffd700; font-weight: bold; margin: 20px 0; }
+.mystery p { color: #aaa; margin-bottom: 30px; font-size: 1.1rem; }
+
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+.step { background: #111; border: 1px solid #222; border-radius: 16px; padding: 30px; }
+.step-num { font-size: 3rem; color: #ff3366; font-weight: bold; margin-bottom: 15px; }
+.step h4 { font-size: 1.3rem; margin-bottom: 10px; }
+.step p { color: #aaa; }
+
+.contacts { text-align: center; background: #111; border-radius: 24px; padding: 60px 20px; }
+
+footer { text-align: center; padding: 40px; border-top: 1px solid #222; color: #666; }
+.disclaimer { display: inline-block; padding: 10px 20px; background: rgba(255,51,102,0.1); border: 1px solid #ff3366; border-radius: 50px; color: #ff3366; margin-bottom: 20px; }
+
+/* Модальное окно */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+
+.modal {
+    background: #111;
+    border: 2px solid #ff3366;
+    border-radius: 24px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s ease;
+}
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    color: #fff;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+    line-height: 1;
+}
+.modal-close:hover { color: #ff3366; }
+
+.modal-header {
+    text-align: center;
+    padding: 30px 20px 10px;
+    border-bottom: 1px solid #222;
+}
+.modal-header h3 {
+    font-size: 2rem;
+    color: #ff3366;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+.modal-header .modal-subtitle {
+    color: #aaa;
+    font-size: 1rem;
+}
+
+.modal-image {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: #1a1a1a;
+}
+.modal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 15%;
+}
+
+.modal-price {
+    text-align: center;
+    padding: 25px 20px;
+    border-bottom: 1px solid #222;
+}
+.modal-price .price-label {
+    color: #888;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+.modal-price .price-value {
+    font-size: 3rem;
+    color: #ffd700;
+    font-weight: bold;
+}
+.modal-price .sizes {
+    color: #888;
+    margin-top: 8px;
+    font-size: 0.95rem;
+}
+
+/* Блок информации (вместо отзывов) */
+.modal-info {
+    padding: 25px 20px;
+    border-bottom: 1px solid #222;
+}
+.modal-info h4 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #ff3366;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+}
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+}
+.info-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+.info-text {
+    color: #ccc;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+.info-text strong {
+    color: #fff;
+    display: block;
+    margin-bottom: 3px;
+}
+
+.modal-footer {
+    padding: 25px 20px;
+    text-align: center;
+}
+.modal-footer .btn {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 18px;
+}
+
+@media (max-width: 768px) {
+    header h1 { font-size: 2.5rem; }
+    .btn { display: block; margin: 10px auto; max-width: 300px; }
+    .modal-price .price-value { font-size: 2.5rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>Secret Jersey<span>СПб</span></h1>
+        <p>Футбольные футболки в Санкт-Петербурге</p>
+        <a href="https://t.me/secretjerseyspb" class="btn">Подписаться на канал</a>
+        <a href="#catalog" class="btn btn-outline">Каталог</a>
+    </div>
+</header>
+
+<section id="catalog">
+    <div class="container">
+        <h2>Каталог</h2>
+        <div class="products">
+            <div class="card" onclick="openModal('Домашняя', 'https://raw.githubusercontent.com/secretjersy/Secretjer/main/IMG_0300.jpg', '1 800 ₽', 'S · M · L · XL · XXL')">
+                <div class="card-img">
+                    <img src="https://raw.githubusercontent.com/secretjersy/Secretjer/main/IMG_0300.jpg" alt="Домашняя футболка">
+                </div>
+                <div class="card-body">
+                    <div class="card-title">Домашняя</div>
+                    <div class="card-price">1 800 ₽</div>
+                    <div class="card-sizes">S · M · L · XL · XXL</div>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal('Гостевая', 'https://raw.githubusercontent.com/secretjersy/Secretjer/main/IMG_0302.jpg', '1 800 ₽', 'S · M · L · XL')">
+                <div class="card-img">
+                    <img src="https://raw.githubusercontent.com/secretjersy/Secretjer/main/IMG_0302.jpg" alt="Гостевая футболка">
+                </div>
+                <div class="card-body">
+                    <div class="card-title">Гостевая</div>
+                    <div class="card-price">1 800 ₽</div>
+                    <div class="card-sizes">S · M · L · XL</div>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal('Ретро', 'https://raw.githubusercontent.com/secretjersy/Secretjer/main/IMG_0304.jpg', '1 800 ₽', 'S · M · L · XL · XXL')">
+                <div class="card-img">
+                    <img src="https://raw.githubusercontent.com/secretjersy/Secretjer/main/IMG_0304.jpg" alt="Ретро футболка">
+                </div>
+                <div class="card-body">
+                    <div class="card-title">Ретро</div>
+                    <div class="card-price">1 800 ₽</div>
+                    <div class="card-sizes">S · M · L · XL · XXL</div>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal('Специальная', 'https://raw.githubusercontent.com/secretjersy/Secretjer/main/IMG_0303.jpg', '1 800 ₽', 'M · L · XL')">
+                <div class="card-img">
+                    <img src="https://raw.githubusercontent.com/secretjersy/Secretjer/main/IMG_0303.jpg" alt="Специальная футболка">
+                </div>
+                <div class="card-body">
+                    <div class="card-title">Специальная</div>
+                    <div class="card-price">1 800 ₽</div>
+                    <div class="card-sizes">M · L · XL</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <div class="mystery">
+            <h3>Мистери-бокс</h3>
+            <p>2–3 футболки в одном боксе. Случайные модели из ассортимента.</p>
+            <div class="price">3 800 ₽</div>
+            <a href="https://t.me/secretjerseyspb" class="btn">Перейти в канал</a>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <h2>Как купить</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">01</div>
+                <h4>Авито</h4>
+                <p>Найди нас на Авито и оформи заказ с доставкой.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">02</div>
+                <h4>Телеграм-канал</h4>
+                <p>Подпишись на канал — там новинки и акции.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">03</div>
+                <h4>Личная встреча</h4>
+                <p>Встретимся в СПб, померишь и заберёшь.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <div class="contacts">
+            <h2>Связь</h2>
+            <p style="color:#aaa; margin-bottom:30px;">Подписывайся на наш канал</p>
+            <a href="https://t.me/secretjerseyspb" class="btn">Наш канал в Телеграм</a>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="disclaimer">Не оригинал. Фанатская версия.</div>
+    <p>© 2026 Secret Jersey СПб</p>
+</footer>
+
+<!-- Модальное окно -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal(event)">×</button>
+        <div class="modal-header">
+            <h3>Секретный бокс</h3>
+            <div class="modal-subtitle" id="modalName">Футболка</div>
+        </div>
+        <div class="modal-image">
+            <img id="modalImg" src="" alt="">
+        </div>
+        <div class="modal-price">
+            <div class="price-label">Цена</div>
+            <div class="price-value" id="modalPrice">1 800 ₽</div>
+            <div class="sizes" id="modalSizes">Размеры: S · M · L · XL</div>
+        </div>
+
+        <!-- Блок информации (вместо отзывов) -->
+        <div class="modal-info">
+            <h4>Условия</h4>
+            <div class="info-item">
+                <div class="info-icon">🚚</div>
+                <div class="info-text">
+                    <strong>Доставка</strong>
+                    По СПб — личная встреча. По России — Авито Доставка, СДЭК, Почта.
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">💳</div>
+                <div class="info-text">
+                    <strong>Оплата</strong>
+                    Перевод на карту или при получении (Авито).
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon"></div>
+                <div class="info-text">
+                    <strong>Обмен размера</strong>
+                    Если не подошёл — поменяем на другой в течение 7 дней.
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon"></div>
+                <div class="info-text">
+                    <strong>Отправка</strong>
+                    В день заказа или на следующий. Трек-номер сразу.
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <a href="https://t.me/secretjerseyspb" class="btn">Заказать в Телеграм</a>
+        </div>
+    </div>
+</div>
+
+<script>
+function openModal(name, img, price, sizes) {
+    document.getElementById('modalName').textContent = name;
+    document.getElementById('modalImg').src = img;
+    document.getElementById('modalPrice').textContent = price;
+    document.getElementById('modalSizes').textContent = 'Размеры: ' + sizes;
+    document.getElementById('modal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal(event) {
+    if (event.target.classList.contains('modal-overlay') || event.target.classList.contains('modal-close')) {
+        document.getElementById('modal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+}
+</script>
+
+</body>
+</html>
